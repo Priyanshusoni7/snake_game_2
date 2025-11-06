@@ -1,41 +1,50 @@
-# 🐍 Snake Game (C++ / OOP Based)
+# 🐍 Snake Game (C++ / OOP-Based Terminal Game)
+
+## 🏁 Introduction
+
+The **Snake Game** is a classic arcade-style terminal game built entirely in **C++**, following **Object-Oriented Programming (OOP)** principles.  
+The player controls a snake that moves around a grid, eats food to grow, and avoids collisions with walls, obstacles, or itself.  
+This project demonstrates real-time input handling, clean modular design, and practical implementation of OOP concepts.
+
+---
 
 ## 🎮 Overview
-This is a **terminal-based Snake Game** built in **C++**, designed using **Object-Oriented Programming (OOP)** principles.  
-The game runs in the **Windows console** and demonstrates clean modular design with encapsulation, abstraction, and easy extensibility.
+
+This is a **Windows console-based game** that showcases how C++ classes and encapsulation can be used to build an interactive application.  
+The project also implements persistent **high score tracking**, multiple **difficulty levels**, and **game modes** for extended playability.
 
 It supports:
-- Multiple difficulty levels  
-- Two game modes (Border / No Border)  
-- **Obstacles in Hard Mode**  
-- **Persistent High Score System**
+- Multiple **difficulty levels** (Easy, Medium, Hard)  
+- **Two game modes**: Border Mode / No Border Mode  
+- **Obstacles** in Hard Mode  
+- **Persistent high score system** saved in a text file  
 
 ---
 
 ## ✨ Features
 
-✅ **OOP-Based Design**  
-Organized into multiple classes (`Game`, `Snake`, `Food`, `Obstacle`, `Console`) for clarity and modularity.  
+✅ **OOP-Based Modular Design**  
+Organized into multiple classes (`Game`, `Snake`, `Food`, `Obstacle`, `Console`) for clarity and maintainability.  
 
 ✅ **Difficulty Levels**
 - **Easy:** Slow snake speed  
-- **Medium:** Balanced speed  
-- **Hard:** Fast snake + Random obstacles  
+- **Medium:** Balanced  
+- **Hard:** Faster speed with random obstacles  
 
 ✅ **Game Modes**
 - **Border Mode:** Hitting the wall = Game Over  
 - **No Border Mode:** Snake wraps around screen edges  
 
 ✅ **Obstacles in Hard Mode**
-- Random `#` walls appear on the board  
-- Hitting any obstacle results in Game Over  
+- Random `#` walls appear on the grid  
+- Colliding with any obstacle results in Game Over  
 
 ✅ **High Score Tracking**
-- Highest score is stored in `highscore.txt`  
-- Automatically updates when you set a new record  
+- Saved in `highscore.txt` file  
+- Automatically updates when a new record is achieved  
 
-✅ **Smooth Console Rendering**
-- Uses Windows API `WriteConsoleOutput` for flicker-free visuals  
+✅ **Smooth Rendering**
+- Uses Windows API `WriteConsoleOutput()` for flicker-free visuals  
 
 ---
 
@@ -43,12 +52,12 @@ Organized into multiple classes (`Game`, `Snake`, `Food`, `Obstacle`, `Console`)
 
 | Concept | Description | Example |
 |----------|--------------|----------|
-| **Class & Object** | Entities like `Snake`, `Food`, `Game`, and `Console` are classes instantiated as objects. | `Game game(60, 20);` |
-| **Encapsulation** | Data & logic are bundled within classes. | `Snake::move()`, `Food::spawn()` |
-| **Abstraction** | Complex logic hidden behind simple methods. | `game.run()` |
-| **Inheritance (Extensible)** | Future scope for new food or game types. | `class BonusFood : public Food` |
-| **Polymorphism (Optional)** | Same interface, different behavior (can be added later). | `virtual int getPoints()` |
-| **Composition** | `Game` *has-a* `Snake`, `Food`, and `Obstacle` objects. | `Obstacle obstacle;` |
+| **Class & Object** | Each game entity is represented as a class. | `Game game(60, 20);` |
+| **Encapsulation** | Data and related logic are grouped within classes. | `Snake::move()`, `Game::updateLogic()` |
+| **Abstraction** | Hides complexity behind easy-to-use functions. | `game.run()` |
+| **Inheritance (Extensible)** | Can be extended with new features like `BonusFood`. | `class BonusFood : public Food` |
+| **Polymorphism (Optional)** | Enables flexibility for different food or snake types. | `virtual void spawn()` |
+| **Composition** | The `Game` object contains `Snake`, `Food`, and `Obstacle` objects. | `Obstacle obstacle;` |
 
 ---
 
@@ -60,11 +69,11 @@ Organized into multiple classes (`Game`, `Snake`, `Food`, `Obstacle`, `Console`)
 | **S** | Move Down |
 | **A** | Move Left |
 | **D** | Move Right |
-| **X** | Quit the Game |
+| **X** | Quit Game |
 
-### Game Over Screen
-- Displays your **Final Score** and **Highest Score**.  
-- If you beat the previous record → shows `*** New High Score! ***`
+### 🎯 Game Over Screen
+- Displays **Final Score** and **Highest Score**.  
+- If you beat your previous record → shows `*** New High Score! ***`.
 
 ---
 
@@ -72,12 +81,11 @@ Organized into multiple classes (`Game`, `Snake`, `Food`, `Obstacle`, `Console`)
 
 ### 🧩 Requirements
 - **Windows OS**
-- **C++ Compiler** (MinGW, MSVC, Code::Blocks, or Dev-C++)
+- **C++ Compiler** (e.g., MinGW, MSVC, Code::Blocks, or Dev-C++)
 - Must support `<windows.h>` and `<conio.h>`
 
 ### 🧠 Compile and Run
 
-#### Using Command Prompt:
 ```bash
 g++ SnakeGame.cpp -o SnakeGame
 SnakeGame.exe
@@ -87,66 +95,22 @@ SnakeGame.exe
 SnakeGame/
 │
 ├── SnakeGame.cpp        # Main source file
-├── highscore.txt        # Automatically generated for storing high score
-├── README.md            # Project documentation
-└── (Optional) assets/   # Future files (textures, sounds, etc.)
+├── highscore.txt        # Automatically created for saving high score
+├── README.md            # Documentation
+└── (Optional) assets/   # For future extensions (sound, textures, etc.)
 
+💾 High Score System
 
-🧩 Class Diagram (Simplified UML)
-+--------------------+
-|       Game         |
-+--------------------+
-| - WIDTH, HEIGHT    |
-| - score, highScore |
-| - Snake snake      |
-| - Food food        |
-| - Obstacle obstacle|
-+--------------------+
-| + run()            |
-| + setup()          |
-| + draw()           |
-| + updateLogic()    |
-+--------------------+
+The game automatically creates a highscore.txt file in the project directory.
 
-+--------------------+
-|       Snake        |
-+--------------------+
-| - vector<Position> |
-| - Direction dir    |
-+--------------------+
-| + move()           |
-| + getHead()        |
-| + hasSelfCollision()|
-+--------------------+
+Your best score is saved even after closing the game.
 
-+--------------------+
-|        Food        |
-+--------------------+
-| - Position pos     |
-+--------------------+
-| + spawn()          |
-| + getPosition()    |
-+--------------------+
-
-+--------------------+
-|      Obstacle      |
-+--------------------+
-| - vector<Position> |
-+--------------------+
-| + spawnObstacles() |
-| + isHit()          |
-+--------------------+
-
-+--------------------+
-|      Console       |
-+--------------------+
-| + setupConsole()   |
-| + hideCursor()     |
-+--------------------+
-
+If you beat your high score, the file is updated instantly.
 
 🧱 Hard Mode Example (Obstacles)
-When playing on Hard, the board includes random obstacles (#) that end the game if hit.
+
+When playing on Hard Mode, random obstacles (#) are generated on the board:
+
 ----------------------------------------------
 |                     *                     |
 |         ######                            |
@@ -157,74 +121,24 @@ When playing on Hard, the board includes random obstacles (#) that end the game 
 ----------------------------------------------
 
 
-🧩 How High Score Works
+## 🧰 Tech Stack
 
-
-The game saves your best score in highscore.txt.
-
-
-When you surpass your old record, it automatically updates.
-
-
-The file persists between runs, even after closing the game.
-
-
-
-🧠 Learning Outcomes
-This project helps you learn:
-
-
-Practical OOP in C++
-
-
-Real-time keyboard input using _kbhit() and _getch()
-
-
-Console rendering with WriteConsoleOutput
-
-
-File handling using <fstream>
-
-
-Game loop and object interaction design
-
-
-
-💡 Future Enhancements
-You can extend the game with:
-
-
-🧱 Custom wall patterns or levels
-
-
-🥇 Power-ups and speed boosts
-
-
-🔊 Sound effects using PlaySound()
-
-
-💬 Restart option after Game Over
-
-
-🧠 AI Snake (multiplayer or bot mode)
-
-
-
-👨‍💻 Author
-Priyanshu Soni
-🎯 Solo Developer & C++ Enthusiast
-📧 Designed using Object-Oriented Programming principles
-
-🏁 License
-This project is released under the MIT License — free for personal and educational use.
-
-🚀 Run & Enjoy
-g++ SnakeGame.cpp -o SnakeGame
-SnakeGame.exe
-
-Survive. Grow. Avoid walls & obstacles. Beat your high score! 🐍🔥
+| Category | Technology Used |
+|-----------|-----------------|
+| **Language** | C++ |
+| **Paradigm** | Object-Oriented Programming |
+| **Libraries** | `<iostream>`, `<vector>`, `<windows.h>`, `<conio.h>`, `<fstream>`, `<ctime>`, `<algorithm>`, `<string>` |
+| **Platform** | Windows Console Application |
+| **Compiler** | GCC / MinGW / MSVC |
+| **IDE (Optional)** | Code::Blocks, Dev-C++, Visual Studio Code |
 
 ---
 
-Would you like me to make a **“GitHub-optimized” version** next (with emojis, collapsible sections, and a preview image placeholder)?  
-That’s perfect if you plan to upload this project to GitHub or showcase it in your portfolio.
+## 👨‍💻 Authors
+
+| Name | Role |
+|------|------|
+| **Priyanshu Dhrangdhariya** | Developer |
+| **Kriti Patel** | Developer |
+| **Kushal Thakkar** | Developer |
+| **Jay Unadkat** | Developer |
