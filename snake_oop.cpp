@@ -124,16 +124,24 @@ public:
 // FOOD CLASS
 // Handles food spawning and position
 // ==============================================
-class Food
+class FoodSource
+{
+public:
+    virtual ~FoodSource() = default;
+    virtual Position getPosition() const = 0;
+    virtual void spawn(int width, int height, const Snake &snake) = 0;
+};
+
+class Food : public FoodSource
 {
 private:
     Position pos;
 
 public:
     Food() : pos(0, 0) {}
-    Position getPosition() const { return pos; }
+    Position getPosition() const override { return pos; }
 
-    void spawn(int width, int height, const Snake &snake)
+    void spawn(int width, int height, const Snake &snake) override
     {
         do
         {
@@ -141,6 +149,13 @@ public:
             pos.y = rand() % height;
         } while (snake.contains(pos));
     }
+};
+
+struct GameProgress
+{
+    int speed = 100;
+    int score = 0;
+    bool gameOver = false;
 };
 
 // ==============================================
@@ -180,6 +195,76 @@ public:
     }
 };
 
+void advanceGame(Snake &snake, FoodSource &food, const Obstacle &obstacle,
+                 GameProgress &progress, int width, int height,
+                 bool borderMode, bool hardMode)
+{
+    Direction dir = snake.getDirection();
+    if (dir == STOP)
+        return;
+
+    Position head = snake.getHead();
+    switch (dir)
+    {
+    case LEFT:
+        head.x--;
+        break;
+    case RIGHT:
+        head.x++;
+        break;
+    case UP:
+        head.y--;
+        break;
+    case DOWN:
+        head.y++;
+        break;
+    default:
+        break;
+    }
+
+    if (borderMode)
+    {
+        if (head.x < 0 || head.x >= width || head.y < 0 || head.y >= height)
+        {
+            progress.gameOver = true;
+            return;
+        }
+    }
+    else
+    {
+        if (head.x < 0)
+            head.x = width - 1;
+        else if (head.x >= width)
+            head.x = 0;
+        if (head.y < 0)
+            head.y = height - 1;
+        else if (head.y >= height)
+            head.y = 0;
+    }
+
+    if (snake.hasSelfCollision(head))
+    {
+        progress.gameOver = true;
+        return;
+    }
+
+    if (hardMode && obstacle.isHit(head))
+    {
+        progress.gameOver = true;
+        return;
+    }
+
+    bool ateFood = (head == food.getPosition());
+    snake.move(head, ateFood);
+    if (ateFood)
+    {
+        progress.score++;
+        if (progress.speed > 40)
+            progress.speed -= 2;
+        food.spawn(width, height, snake);
+    }
+}
+
 // ==============================================
 // GAME CLASS
 // Core game logic, loop, rendering, scoring
@@ -189,10 +274,8 @@ class Game
 private:
     const int WIDTH, HEIGHT;
     bool borderMode;
-    int speed;
-    int score;
+    GameProgress progress;
     int highScore;
-    bool gameOver;
     bool hardMode; // Hard mode = obstacles active
     Snake *snake;
     Food food;
@@ -202,10 +285,7 @@ public:
     Game(int w, int h) : WIDTH(w), HEIGHT(h)
     {
         borderMode = true;
-        speed = 100;
-        score = 0;
         highScore = loadHighScore();
-        gameOver = false;
         hardMode = false;
         snake = nullptr;
     }
@@ -237,8 +317,8 @@ public:
         snake = new Snake(WIDTH / 2, HEIGHT / 2);
         srand((unsigned int)time(0));
         food.spawn(WIDTH, HEIGHT, *snake);
-        score = 0;
-        gameOver = false;
+        progress.score = 0;
+        progress.gameOver = false;
 
         // ✅ Add obstacles if Hard mode
         if (hardMode)
@@ -268,15 +348,15 @@ public:
         switch (diff)
         {
         case '1':
-            speed = 130;
+            progress.speed = 130;
             hardMode = false;
             break;
         case '3':
-            speed = 90;
+            progress.speed = 90;
             hardMode = true;
             break;
         default:
-            speed = 100;
+            progress.speed = 100;
             hardMode = false;
             break;
         }
@@ -354,7 +434,7 @@ public:
             buffer[idx++].Char.AsciiChar = '-';
 
         // Score + High score display
-        string scoreStr = "Score: " + to_string(score) + "   High: " + to_string(highScore);
+        string scoreStr = "Score: " + to_string(progress.score) + "   High: " + to_string(highScore);
         for (size_t i = 0; i < scoreStr.length() && i < totalWidth; i++)
         {
             buffer[idx].Char.AsciiChar = scoreStr[i];
@@ -404,7 +484,7 @@ public:
                     snake->setDirection(DOWN);
                 break;
             case 'X':
-                gameOver = true;
+                progress.gameOver = true;
                 break;
             }
         }
@@ -413,88 +493,19 @@ public:
     // Core game logic: movement, collision, food
     void updateLogic()
     {
-        Direction dir = snake->getDirection();
-        if (dir == STOP)
-            return;
-
-        Position head = snake->getHead();
-
-        // Move in direction
-        switch (dir)
-        {
-        case LEFT:
-            head.x--;
-            break;
-        case RIGHT:
-            head.x++;
-            break;
-        case UP:
-            head.y--;
-            break;
-        case DOWN:
-            head.y++;
-            break;
-        default:
-            break;
-        }
-
-        // Wall collision
-        if (borderMode)
-        {
-            if (head.x < 0 || head.x >= WIDTH || head.y < 0 || head.y >= HEIGHT)
-            {
-                gameOver = true;
-                return;
-            }
-        }
-        else
-        {
-            if (head.x < 0)
-                head.x = WIDTH - 1;
-            else if (head.x >= WIDTH)
-                head.x = 0;
-            if (head.y < 0)
-                head.y = HEIGHT - 1;
-            else if (head.y >= HEIGHT)
-                head.y = 0;
-        }
-
-        // Self collision
-        if (snake->hasSelfCollision(head))
-        {
-            gameOver = true;
-            return;
-        }
-
-        // ✅ Obstacle collision
-        if (hardMode && obstacle.isHit(head))
-        {
-            gameOver = true;
-            return;
-        }
-
-        bool ateFood = (head == food.getPosition());
-        snake->move(head, ateFood);
-
-        if (ateFood)
-        {
-            score++;
-            if (speed > 40)
-                speed -= 2;
-            food.spawn(WIDTH, HEIGHT, *snake);
-        }
+        advanceGame(*snake, food, obstacle, progress, WIDTH, HEIGHT, borderMode, hardMode);
     }
 
     // Run the game loop
     void run()
     {
         setup();
-        while (!gameOver)
+        while (!progress.gameOver)
         {
             draw();
             handleInput();
             updateLogic();
-            Sleep(speed);
+            Sleep(progress.speed);
         }
 
         // Game over screen
@@ -502,11 +513,11 @@ public:
         cout << "#########################\n";
         cout << "#      GAME OVER!       #\n";
         cout << "#########################\n";
-        cout << "Final Score: " << score << "\n";
+        cout << "Final Score: " << progress.score << "\n";
 
-        if (score > highScore)
+        if (progress.score > highScore)
         {
-            highScore = score;
+            highScore = progress.score;
             saveHighScore();
             cout << "*** New High Score! ***\n";
         }

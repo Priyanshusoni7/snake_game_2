@@ -1,0 +1,8 @@
+PASS self collision recognizes occupied body cell
+PASS spawned obstacle reports a hit
+
+Production file: base-snake.cpp (generated verbatim from lab4-base:snake_oop.cpp)
+Lines executed:16.48% of 267
+Branches executed:15.63% of 256
+Taken at least once:10.16% of 256
+Calls executed:23.46% of 179
