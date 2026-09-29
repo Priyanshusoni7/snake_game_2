@@ -1,0 +1,16 @@
+PASS stopped snake does nothing
+PASS move without food preserves length and score
+PASS eating grows and scores exactly once
+PASS eating respects minimum speed
+PASS border mode ends at wall
+PASS no-border wraps left to right
+PASS no-border wraps right to left
+PASS no-border wraps top to bottom
+PASS no-border wraps bottom to top
+PASS moving into body ends game
+
+Production file: snake_oop.cpp
+Lines executed:23.99% of 271
+Branches executed:22.69% of 260
+Taken at least once:17.69% of 260
+Calls executed:13.37% of 187
